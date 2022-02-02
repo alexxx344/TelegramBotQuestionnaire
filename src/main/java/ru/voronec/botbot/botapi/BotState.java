@@ -1,0 +1,21 @@
+package ru.voronec.botbot.botapi;
+
+
+
+public enum BotState {
+    ASK_START,
+    ASK_NAME,
+    ASK_AGE,
+
+    FILLING_PROFILE,
+    PROFILE_FILLED,
+    SHOW_USER_PROFILE,
+    SHOW_MAIN_MENU,
+    SHOW_ALL_PROFILES_MY_STATE,
+    SHOW_HELP_MENU, ASK_WORD,
+    ASK_WORD_CONTINUE,
+    RANDOM_WORD,
+    GET_QUESTION,
+    CREATE_QUESTION,
+    GET_QUESTION_CONTINUE
+}
