@@ -119,15 +119,16 @@ public class TelegramFacade {
         if (buttonQuery.getData().equals("buttonStart")) {
             callBackAnswer = new SendMessage(Long.toString(chatId), "Введите слово");
             userDataCache.setUsersCurrentBotState(userId, BotState.ASK_WORD_CONTINUE);
-        }else if (buttonQuery.getData().equals("buttonGetQuestion")) {
+        } else if (buttonQuery.getData().equals("buttonGetQuestion")) {
             callBackAnswer = new SendMessage(Long.toString(chatId), "Режим получения вопросов");
             userDataCache.setUsersCurrentBotState(userId, BotState.GET_QUESTION_CONTINUE);
-        }
-        else if (buttonQuery.getData().equals("buttonEnd")) {
+        } else if (buttonQuery.getData().equals("buttonEnd")) {
             userDataCache.setUsersCurrentBotState(userId, BotState.SHOW_MAIN_MENU);
         }
 
-        if (userDataCache.getUsersCurrentBotState(userId) ==BotState.GET_QUESTION_CONTINUE){
+        if (userDataCache.getUsersCurrentBotState(userId) == BotState.GET_QUESTION_CONTINUE) {
+//            callBackAnswer = new SendMessage(Long.toString(chatId), chooseTheVariant(buttonQuery));
+            callBackAnswer = botStateContext.processInputMessage(BotState.GET_QUESTION_CONTINUE, buttonQuery);
 
         }
 
@@ -160,6 +161,28 @@ public class TelegramFacade {
 
         return profileFile;
 
+    }
+
+    public String chooseTheVariant(CallbackQuery buttonQuery) {
+        String answer = null;
+        switch (buttonQuery.getData()) {
+            case "buttonNumber1":
+                answer = "1";
+                break;
+            case "buttonNumber2":
+                answer = "2";
+                break;
+            case "buttonNumber3":
+                answer = "3";
+                break;
+            case "buttonNumber4":
+                answer = "4";
+                break;
+            default:
+                answer = "";
+                break;
+        }
+        return answer;
     }
 
 }

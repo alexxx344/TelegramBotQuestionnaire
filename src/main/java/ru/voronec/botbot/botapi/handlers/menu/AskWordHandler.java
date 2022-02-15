@@ -3,6 +3,7 @@ package ru.voronec.botbot.botapi.handlers.menu;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
@@ -31,6 +32,11 @@ public class AskWordHandler implements InputMessageHandler {
     @Override
     public SendMessage handle(Message message) {
         return processUsersInput(message);
+    }
+
+    @Override
+    public SendMessage handle(CallbackQuery message) {
+        return null;
     }
 
     @Override

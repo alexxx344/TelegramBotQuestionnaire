@@ -1,5 +1,6 @@
 package ru.voronec.botbot.botapi.handlers.fillingprofile;
 
+import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import ru.voronec.botbot.botapi.BotState;
 import ru.voronec.botbot.botapi.InputMessageHandler;
 import ru.voronec.botbot.cache.UserDataCache;
@@ -35,6 +36,11 @@ public class FillingProfileHandler implements InputMessageHandler {
             userDataCache.setUsersCurrentBotState(message.getFrom().getId(), BotState.ASK_NAME);
         }
         return processUsersInput(message);
+    }
+
+    @Override
+    public SendMessage handle(CallbackQuery message) {
+        return null;
     }
 
     @Override

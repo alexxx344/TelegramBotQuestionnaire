@@ -1,5 +1,6 @@
 package ru.voronec.botbot.botapi.handlers.menu;
 
+import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import ru.voronec.botbot.botapi.BotState;
 import ru.voronec.botbot.botapi.InputMessageHandler;
 import ru.voronec.botbot.cache.UserDataCache;
@@ -35,6 +36,11 @@ public class ShowAllProfilesHandler implements InputMessageHandler {
         userDataCache.setUsersCurrentBotState(userId, BotState.SHOW_MAIN_MENU);
 
         return new SendMessage(Long.toString(message.getChatId()), "Готово");
+    }
+
+    @Override
+    public SendMessage handle(CallbackQuery message) {
+        return null;
     }
 
     @Override

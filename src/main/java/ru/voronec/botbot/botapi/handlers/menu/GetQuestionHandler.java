@@ -3,6 +3,7 @@ package ru.voronec.botbot.botapi.handlers.menu;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
@@ -33,6 +34,11 @@ public class GetQuestionHandler implements InputMessageHandler {
     @Override
     public SendMessage handle(Message message) {
         return processUsersInput(message);
+    }
+
+    @Override
+    public SendMessage handle(CallbackQuery callbackQuery) {
+        return processUsersInputCb(callbackQuery);
     }
 
     @Override
@@ -79,6 +85,49 @@ public class GetQuestionHandler implements InputMessageHandler {
 
         return replyToUser;
     }
+
+    private SendMessage processUsersInputCb(CallbackQuery inputMsg) {
+        long chatId = inputMsg.getMessage().getChatId();
+        long userId = inputMsg.getFrom().getId();
+        if (userDataCache.getUsersCurrentBotState(inputMsg.getFrom().getId()).equals(BotState.GET_QUESTION_CONTINUE)) {
+
+            String currentNumberOfQuestion = null;
+            if (userDataCache.getCurrentNumberOfQuestion(userId) == null) {
+                userDataCache.setDefaultCurrentNumberOfQuestion(userId);
+                currentNumberOfQuestion = userDataCache.getCurrentNumberOfQuestion(userId);
+            } else {
+                currentNumberOfQuestion = userDataCache.getCurrentNumberOfQuestion(userId);
+                Integer curNumbQuest = Integer.parseInt(userDataCache.getCurrentNumberOfQuestion(userId));
+                userDataCache.setCurrentNumberOfQuestion(userId, String.valueOf(curNumbQuest + 1));
+                //TODO потом зафиксировать сохранялку сделать
+            }
+
+            Question myQuestion = dataService.getQuestionByNumber(currentNumberOfQuestion);
+
+            String rightAnswer = myQuestion.getRightAnswer();
+
+            SendMessage replyToUser =
+                    SendMessage.builder()
+                            .chatId(String.valueOf(chatId))
+                            .text(isAnswerCorrect(rightAnswer,chooseTheVariant(inputMsg)) + myQuestion.getQuestionText())
+                            .replyMarkup(getVariantOfAnswersMessageButtons(
+                                    myQuestion.getAnswer1()
+                                    , myQuestion.getAnswer2()
+                                    , myQuestion.getAnswer3()
+                                    , myQuestion.getAnswer4()))
+                            .build();
+
+            return replyToUser;
+        }
+
+        userDataCache.setUsersCurrentBotState(inputMsg.getFrom().getId(), BotState.GET_QUESTION_CONTINUE);
+        SendMessage replyToUser = messagesService.getReplyMessage(chatId, "reply.GetQuestionStart");
+        replyToUser.setReplyMarkup(getInlineMessageButtons());
+
+        return replyToUser;
+    }
+
+
 
     private InlineKeyboardMarkup getInlineMessageButtons() {
         InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
@@ -176,6 +225,41 @@ public class GetQuestionHandler implements InputMessageHandler {
         inlineKeyboardMarkup.setKeyboard(rowList);
 
         return inlineKeyboardMarkup;
+    }
+
+    public String isAnswerCorrect(String rAnswer,String bAnswer){
+
+        String answer = null;
+
+        if (rAnswer.equals(bAnswer)){
+            answer = "Все верно!!!!!\n\n\n";
+        }else {
+            answer = "Вы ошиблись правильный ответ: " + rAnswer + "\n\n\n";
+        }
+
+        return answer;
+    }
+
+    public String chooseTheVariant(CallbackQuery buttonQuery) {
+        String answer = null;
+        switch (buttonQuery.getData()) {
+            case "buttonNumber1":
+                answer = "1";
+                break;
+            case "buttonNumber2":
+                answer = "2";
+                break;
+            case "buttonNumber3":
+                answer = "3";
+                break;
+            case "buttonNumber4":
+                answer = "4";
+                break;
+            default:
+                answer = "";
+                break;
+        }
+        return answer;
     }
 
 }

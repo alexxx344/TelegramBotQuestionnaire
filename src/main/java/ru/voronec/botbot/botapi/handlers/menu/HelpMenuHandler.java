@@ -1,5 +1,6 @@
 package ru.voronec.botbot.botapi.handlers.menu;
 
+import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import ru.voronec.botbot.botapi.BotState;
 import ru.voronec.botbot.botapi.InputMessageHandler;
 import ru.voronec.botbot.service.MainMenuService;
@@ -24,6 +25,11 @@ public class HelpMenuHandler implements InputMessageHandler {
     public SendMessage handle(Message message) {
         return mainMenuService.getMainMenuMessage(message.getChatId(),
                 messagesService.getReplyText("reply.showHelpMenu", Emojis.MAGE));
+    }
+
+    @Override
+    public SendMessage handle(CallbackQuery message) {
+        return null;
     }
 
     @Override
